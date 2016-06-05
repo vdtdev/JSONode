@@ -12,11 +12,32 @@ namespace JSONode.JSON
     {
 
         #region [Private Fields]
+        private bool isRoot = true;
+        private Element parent = null;
         private String name;
         private Collection<Attribute> attributes;
         #endregion
 
         #region [Public Properties]
+        /// <summary>
+        /// Element's Parent
+        /// </summary>
+        public Element Parent
+        {
+            get { return this.parent; }
+            set
+            {
+                this.parent = value;
+                this.isRoot = (this.parent == null);
+            }
+        }
+        /// <summary>
+        /// Indicates if element is a root node
+        /// </summary>
+        public bool IsRoot
+        {
+            get { return (parent == null); }
+        }
         /// <summary>
         /// Name of Element
         /// </summary>
@@ -38,8 +59,10 @@ namespace JSONode.JSON
         /// Constructor for Element
         /// </summary>
         /// <param name="name">Element's name</param>
-        public Element(String name)
+        /// <param name="root">If True, Element is considered a root node</param>
+        public Element(String name, bool root=false)
         {
+            this.isRoot = root;
             this.name = name;
             this.attributes = new Collection<Attribute>();
         }
@@ -49,8 +72,10 @@ namespace JSONode.JSON
         /// </summary>
         /// <param name="name">Element's name</param>
         /// <param name="attributes">Array of Attribute objects to initialize Attributes collection with</param>
-        public Element(String name, Attribute[] attributes)
+        /// <param name="root">If True, Element is considered a root node</param>
+        public Element(String name, Attribute[] attributes, bool root=false)
         {
+            this.isRoot = root;
             this.name = name;
             this.attributes = new Collection<Attribute>();
             foreach (Attribute attr in attributes)

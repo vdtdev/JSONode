@@ -129,7 +129,7 @@ namespace JSONode.JSON
         /// <summary>
         /// Array of all items in Array as Objects
         /// </summary>
-        public Object[] Items
+        public Object[] ItemsAsObjects
         {
             get
             {

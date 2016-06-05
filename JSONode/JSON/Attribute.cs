@@ -27,19 +27,21 @@ namespace JSONode.JSON
         /// <summary>
         /// Raw, uncast value
         /// </summary>
-        public Object RawValue { get { return this.value; } }
+        public Object Value { 
+            get { return this.value; }
+            set
+            {
+                this.value = (Object)value;
+                this.type = value.ToAttrType();
+            }
+        }
         /// <summary>
         /// Get Attribute value (as String); non-string will return null.
         /// </summary>
-        public String Value { get { return this.value.FormatByAttrType(); } }
-        /// <summary>
-        /// Get Attribute value (as Array); non-array value will 
-        /// throw AttributeException.
-        /// </summary>
-        public EArray Value { get { return (EArray)this.value; } }
+        public String StringValue { get { return this.value.FormatByAttrType(); } }
         /// <summary>Get Attribute value (as Element); non-element value will
         /// throw AttributeException.</summary>
-        public Element Value
+        public Element ElementValue
         {
             get
             {
@@ -60,7 +62,7 @@ namespace JSONode.JSON
         /// </summary>
         /// <remarks>Will throw an AttributeException if value is not an 
         /// Element</remarks>
-        public EArray Value
+        public EArray ArrayValue
         {
             get
             {
@@ -71,21 +73,9 @@ namespace JSONode.JSON
                 }
                 else
                 {
-                    throw new AttributeException("Attribute is not an Array.");
+                    throw new Exceptions.AttributeException("Attribute is not an Array.");
                 }
                 return value;
-            }
-        }
-        /// <summary>
-        /// Update Attribute value with an Object.
-        /// Type will also updated.
-        /// </summary>
-        public Object Value
-        {
-            set
-            {
-                this.value = (Object)value;
-                this.type = value.ToAttrType();
             }
         }
         #endregion
