@@ -5,7 +5,7 @@ using System.Text;
 
 namespace JSONode.JSON
 {
-    static class Exceptions
+    public static class Exceptions
     {
 
         /// <summary>

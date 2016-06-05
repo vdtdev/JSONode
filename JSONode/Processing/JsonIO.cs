@@ -16,7 +16,8 @@ namespace JSONode.Processing
         public static Element LoadFile(String fileName)
         {
             
-            JsoNet.JsonTextReader reader = new(new StreamReader(fileName));
+            JsoNet.JsonTextReader reader = new JsoNet.JsonTextReader(new StreamReader(fileName));
+            return null;
             
         }
 
