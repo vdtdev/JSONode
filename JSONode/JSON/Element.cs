@@ -25,10 +25,12 @@ namespace JSONode.JSON
         public Element Parent
         {
             get { return this.parent; }
-            set {
+            set
+            {
                 this.parent = value;
                 this.isRoot = (this.parent == null);
             }
+        }
         /// <summary>
         /// Indicates if element is a root node
         /// </summary>
