@@ -3,8 +3,8 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using JSONode;
 using JSONode.JSON;
-using JArray = JSONode.JSON.Array;
 using JAttribute = JSONode.JSON.Attribute;
 
 namespace JSONodeTests
@@ -19,7 +19,6 @@ namespace JSONodeTests
         public JSONUnitTest()
         {
 
-            
 
         }
 
@@ -64,6 +63,16 @@ namespace JSONodeTests
         #endregion
 
         [TestMethod]
+        public void Create_Element()
+        {
+            Element e = new Element("Root", true);
+            Assert.AreEqual(e.Name, "Root");
+            Assert.AreEqual(e.IsRoot, true);
+            JAttribute a = new JAttribute("test", 15);
+            Assert.AreEqual(a.Name, "test");
+        }
+
+        [TestMethod]
         public void Create_Array()
         {
             JArray array = new JArray();
@@ -71,9 +80,9 @@ namespace JSONodeTests
 
             int itemCount = 0;
 
-            foreach (Object item in items)
+            for (int i = 0; i < items.Length;i++ )
             {
-                array.Add(item);
+                array.Add(items[i]);
                 itemCount++;
                 Assert.AreEqual(array.Items.Length, itemCount, "Not enough items in Array.");
             }
@@ -87,7 +96,8 @@ namespace JSONodeTests
             array.RemoveAt(0);
             Assert.AreEqual(array.Items.Length, itemCount - 1, "Item count didn't decrease.");
 
-            array.Remove((object)2);
+            bool remove = array.Remove((object)2);
+            Assert.IsTrue(remove);
             Assert.AreEqual(array.Items.Length, itemCount - 2, "Item count didn't decrease;");
             
 

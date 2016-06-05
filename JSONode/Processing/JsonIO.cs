@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using EArray = JSONode.JSON.Array;
+using EArray = JSONode.JSON.JArray;
 using System.IO;
 using JsoNet = Newtonsoft.Json;
 

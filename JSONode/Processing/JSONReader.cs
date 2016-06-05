@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using JArray = JSONode.JSON.Array;
+using JArray = JSONode.JSON.JArray;
 using JAttribute = JSONode.JSON.Attribute;
 using System.IO;
 using JsoNet = Newtonsoft.Json;
@@ -30,6 +30,8 @@ namespace JSONode.Processing
             public Location previous;
             public String nextName;
             public Object nextValue;
+            public Element prevElem;
+            public JArray prevArray;
             public ParseStep(Element root)
             {
                 this.curAttr = null;
@@ -39,6 +41,8 @@ namespace JSONode.Processing
                 this.previous = Location.None;
                 this.nextName = null;
                 this.nextValue = null;
+                this.prevArray = null;
+                this.prevElem = null;
             }
             /// <summary>
             /// Update tracking location
@@ -102,7 +106,17 @@ namespace JSONode.Processing
                             tracker.curArray.Add(reader.Value);
                         }
                         break;
-
+                    case JsoNet.JsonToken.EndObject:
+                        tracker.current=tracker.previous;
+                        if (tracker.previous == ParseStep.Location.Element)
+                        {
+                            tracker.curElem = tracker.prevElem;
+                        }
+                        if (tracker.previous == ParseStep.Location.Array)
+                        {
+                            tracker.curArray = tracker.prevArray;
+                        }
+                        break;
 
                 }
             }

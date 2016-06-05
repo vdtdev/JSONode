@@ -5,12 +5,12 @@ using System.Text;
 
 namespace JSONode.JSON
 {
-    public class Array
+    public class JArray
     {
 
-        #region [Array Item Struct]
+        #region [JArray Item Struct]
         /// <summary>
-        /// Struct used to pair Array item values and data types
+        /// Struct used to pair JArray item values and data types
         /// </summary>
         public struct ArrayItem
         {
@@ -49,7 +49,7 @@ namespace JSONode.JSON
 
         #region [Public Properties]
         /// <summary>
-        /// All Array items as ArrayItem instances, with pre-determined
+        /// All JArray items as ArrayItem instances, with pre-determined
         /// AttrType
         /// </summary>
         public ArrayItem[] Items
@@ -62,16 +62,16 @@ namespace JSONode.JSON
         #endregion
 
         /// <summary>
-        /// Array constructor
+        /// JArray constructor
         /// </summary>
-        public Array()
+        public JArray()
         {
             this.items = new List<ArrayItem>();
         }
 
         #region [Array Item Methods]
         /// <summary>
-        /// Add item to Array
+        /// Add item to JArray
         /// </summary>
         /// <param name="item">Item to add</param>
         public void Add(Object item)
@@ -80,7 +80,7 @@ namespace JSONode.JSON
         }
 
         /// <summary>
-        /// Attempt to remove a specific item from Array
+        /// Attempt to remove a specific item from JArray
         /// </summary>
         /// <param name="item">Item to try removing</param>
         /// <returns>True if item was found and removed; False otherwise</returns>
@@ -98,7 +98,7 @@ namespace JSONode.JSON
             }
 
             // consider not found if target value is null
-            found = found && (target.Value != null);
+            found = found || (target.Value != null);
 
             if (found)
             {
@@ -117,7 +117,7 @@ namespace JSONode.JSON
         }
 
         /// <summary>
-        /// Remove all items from Array
+        /// Remove all items from JArray
         /// </summary>
         public void Clear()
         {
@@ -127,7 +127,7 @@ namespace JSONode.JSON
 
         #region [Item Inspection Methods]
         /// <summary>
-        /// Array of all items in Array as Objects
+        /// Array of all items in JArray as Objects
         /// </summary>
         public Object[] ItemsAsObjects
         {
@@ -153,11 +153,11 @@ namespace JSONode.JSON
         }
 
         /// <summary>
-        /// Get Array containing indexes of all Array items that are of specified non-literal AttrType
+        /// Get JArray containing indexes of all JArray items that are of specified non-literal AttrType
         /// </summary>
-        /// <remarks>Passing a type other than Element or Array will throw an AttrTypeMismatchException</remarks>
-        /// <param name="type">AttrType to filter for; either AttrType.Element or AttrType.Array</param>
-        /// <returns>Array containing the indexes of items of the specified type</returns>
+        /// <remarks>Passing a type other than Element or JArray will throw an AttrTypeMismatchException</remarks>
+        /// <param name="type">AttrType to filter for; either AttrType.Element or AttrType.JArray</param>
+        /// <returns>JArray containing the indexes of items of the specified type</returns>
         public int[] IndicesOfNonConstantItems(AttrType type)
         {
             AttrType[] accepted = { AttrType.Array, AttrType.Element };
