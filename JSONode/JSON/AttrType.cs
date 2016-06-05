@@ -92,6 +92,8 @@ namespace JSONode.JSON
                 case AttrType.String:
                     formatted = String.Format("\"{0}\"", srcObject);
                     break;
+                case default:
+                    formatted = null;
             }
             return formatted;
         }

@@ -1,2 +1,4 @@
 JSONode/bin/
 JSONode/obj/
+packages/
+JSONodeTests/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
