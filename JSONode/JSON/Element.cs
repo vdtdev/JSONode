@@ -85,6 +85,16 @@ namespace JSONode.JSON
         }
 
         #region [Attribute Management]
+
+        /// <summary>
+        /// Add existing attribute
+        /// </summary>
+        /// <param name="attribute">Existing attribute object</param>
+        public void Add(Attribute attribute)
+        {
+            this.attributes.Add(attribute);
+        }
+
         /// <summary>
         /// Add new attribute
         /// </summary>
