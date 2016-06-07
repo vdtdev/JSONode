@@ -16,7 +16,11 @@ namespace JSONode.Processing
 
 
         #region [Parse Progress Struct]
+#if DEBUG
+        public struct ParseTracker
+#else
         private struct ParseTracker
+#endif        
         {
             public enum Location { Element, Array, Attribute, None }
             public int curAttr, curArray, curElem;
@@ -79,6 +83,11 @@ namespace JSONode.Processing
             /// </summary>
             public void PreviousLocation()
             {
+                // avoid problems if the history is empty
+                if (histLoc.Count == 0)
+                {
+                    return;
+                }
                 curLoc = histLoc.Pop();
                 switch (curLoc)
                 {
@@ -149,15 +158,16 @@ namespace JSONode.Processing
                 this.current = loc;
             }
         }
-        #endregion
+#endregion
 
-        #region [Private Fields/Objects]
+#region [Private Fields/Objects]
         private String fileName = "";
         private String source = "";
         private Element root = null;
-        #endregion
+        private ParseTracker track = new ParseTracker();
+#endregion
 
-        #region [Public Properties]
+#region [Public Properties]
         /// <summary>
         /// Root element of parsed JSON
         /// </summary>
@@ -168,7 +178,10 @@ namespace JSONode.Processing
                 return root;
             }
         }
-        #endregion
+#if DEBUG
+        public ParseTracker Track { get { return this.track; } }
+#endif
+#endregion
 
         public JSONReader(String fileName)
         {
@@ -197,6 +210,11 @@ namespace JSONode.Processing
 
             ParseStep tracker = new ParseStep(root);
             ParseTracker track = new ParseTracker(root);
+            
+            while(reader.Read() && reader.TokenType != JsoNet.JsonToken.StartObject)
+            {
+
+            }
 
             while (reader.Read())
             {
@@ -211,15 +229,19 @@ namespace JSONode.Processing
                         //tracker.curAttr = new JAttribute(tracker.nextName, 0);
                         break;
                     case JsoNet.JsonToken.Boolean:
+                    case JsoNet.JsonToken.String:
+                    case JsoNet.JsonToken.Float:
+                    case JsoNet.JsonToken.Integer:
                         if(track.curLoc == ParseTracker.Location.Attribute)
                         {
-                            track.listAttr[track.curAttr].Value = reader.Value;
+                            track.Attribute.Value = reader.Value;
                             track.Element.Add(track.Attribute);
-                            track.curLoc = track.histLoc.Pop();
+                            track.PreviousLocation();
                         }
-                        if(track.curLoc == ParseTracker.Location.Array)
+                        else if(track.curLoc == ParseTracker.Location.Array)
                         {
                             track.Array.Add(reader.Value);
+                            //track.PreviousLocation();
                         }
 
                         //if (tracker.current == ParseStep.Location.Attribute)
@@ -232,32 +254,70 @@ namespace JSONode.Processing
                         //}
                         break;
                     case JsoNet.JsonToken.EndObject:
-                        if(track.histLoc.Peek() == ParseTracker.Location.Attribute)
+                        if (track.histLoc.Count != 0)
                         {
-                            track.Attribute.Value = track.Element;
-                            track.curLoc = track.histLoc.Pop();
+                            if (track.histLoc.Peek() == ParseTracker.Location.Attribute)
+                            {
+                                track.Attribute.Value = track.Element;
+                                track.PreviousLocation();
+                            }
+                            else if (track.histLoc.Peek() == ParseTracker.Location.Array)
+                            {
+                                track.listArray[track.histIndex.Peek()].Add(track.Element);
+                                track.PreviousLocation();
+                            }
+                            //tracker.current=tracker.previous;
+                            //if (tracker.previous == ParseStep.Location.Element)
+                            //{
+                            //    tracker.curElem = tracker.prevElem;
+                            //}
+                            //if (tracker.previous == ParseStep.Location.Array)
+                            //{
+                            //    tracker.curArray = tracker.prevArray;
+                            //}
                         }
-                        //tracker.current=tracker.previous;
-                        //if (tracker.previous == ParseStep.Location.Element)
-                        //{
-                        //    tracker.curElem = tracker.prevElem;
-                        //}
-                        //if (tracker.previous == ParseStep.Location.Array)
-                        //{
-                        //    tracker.curArray = tracker.prevArray;
-                        //}
                         break;
                     case JsoNet.JsonToken.StartObject:
                         track.UpdateLocation(ParseTracker.Location.Element);
                         if(track.histLoc.Peek()== ParseTracker.Location.Attribute)
                         {
-
+                            Element next1 = new Element("", false);
+                            track.listElem.Add(next1);
+                            track.curElem = track.listElem.IndexOf(next1);
                         }
-                        tracker.previous = tracker.current;
-                        tracker.current = ParseStep.Location.Element;
-                        if(tracker.previous == ParseStep.Location.Attribute)
+                        else if (track.histLoc.Peek() == ParseTracker.Location.Array)
                         {
-                            tracker.prevAttr = tracker.curAttr;
+                            Element next2 = new Element((String)track.Attribute.Value, false);
+                            track.listElem.Add(next2);
+                            track.curElem = track.listElem.IndexOf(next2);
+                        }
+                        //tracker.previous = tracker.current;
+                        //tracker.current = ParseStep.Location.Element;
+                        //if(tracker.previous == ParseStep.Location.Attribute)
+                        //{
+                        //    tracker.prevAttr = tracker.curAttr;
+                        //}
+                        break;
+                    case JsoNet.JsonToken.StartArray:
+                        track.UpdateLocation(ParseTracker.Location.Array);
+                        JArray next = new JArray();
+                        track.listArray.Add(next);
+                        track.curArray = track.listArray.IndexOf(next);
+                        break;
+                    case JsoNet.JsonToken.EndArray:
+                        if(track.histLoc.Count>0 && track.histLoc.Peek()== ParseTracker.Location.Array)
+                        {
+                            JArray parray = track.listArray[track.histIndex.Peek()];
+                            parray.Add(track.Array);
+                            track.PreviousLocation();
+                        }
+                        else if(
+                            (track.histLoc.Count > 0 && track.histLoc.Peek()== ParseTracker.Location.Attribute)
+                            || track.Attribute != null)
+                        {
+                            track.Attribute.Value = track.Array;
+                            track.PreviousLocation(); // back to attribute
+                            track.PreviousLocation(); // back to attribute's parent
                         }
                         break;
                 }
@@ -266,7 +326,7 @@ namespace JSONode.Processing
 
         }
 
-        #region [Private Methods]
+#region [Private Methods]
         private bool ReadFile()
         {
             //if (this.root == null)
@@ -285,7 +345,7 @@ namespace JSONode.Processing
             }
             return success;
         }
-        #endregion
+#endregion
 
     }
 }

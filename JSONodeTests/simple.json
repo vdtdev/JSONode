@@ -1,7 +1,10 @@
 ﻿{
-  "colors": {
-    "red": "ff0000",
-    "green": "00ff00",
-    "blue":  "0000ff"
+  "green": "00ff00",
+  "red": 1,
+  "names": [ "Jon", "Mary", "Bob" ],
+  "facts": [ true, false, false, false, true ],
+  "others": {
+    "numbers": [ 0, 1, 2, 3, 4, 5 ],
+    "hexchars": [0,1,2,3,4,5,6,7,8,9,'abcdef']
   }
 }

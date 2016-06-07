@@ -45,11 +45,11 @@ namespace JSONode.JSON
            switch(type.Name){
                case "String":
                    return AttrType.String;
-               case "Array":
+               case "JSONode.JSON.JArray":
                    return AttrType.Array;
                case "Boolean":
                    return AttrType.Boolean;
-               case "Element":
+               case "JSONode.JSON.Element":
                    return AttrType.Element;
                default:
                    return AttrType.Literal;
