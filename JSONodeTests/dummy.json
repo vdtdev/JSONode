@@ -1,0 +1,24 @@
+﻿{
+  "media": {
+    "books": [
+      {
+        "title": "Harry Potter and the Philosopher's Stone",
+        "author": "J.K. Rowling",
+        "medid": "BK-ROWJK-HAPO1"
+      },
+      {
+        "title": "Foundation",
+        "author": "Issac Asimov",
+        "medid": "BK-ASIIS-FOU1"
+      }
+    ],
+    "films": [
+      {
+        "title": "Ghost in the Shell",
+        "genre": [ "Anime", "Sci-fi", "Cyberpunk" ],
+        "director": "Oshii Mamoru",
+        "medid": "FL-OSHMA-GITS1"
+      }
+    ]
+  }
+}

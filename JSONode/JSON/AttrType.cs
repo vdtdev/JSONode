@@ -1,5 +1,5 @@
 ﻿using System;
-using EArray = JSONode.JSON.Array;
+using EArray = JSONode.JSON.JArray;
 
 namespace JSONode.JSON
 {
@@ -24,7 +24,7 @@ namespace JSONode.JSON
         /// </summary>
         Element,
         /// <summary>
-        /// Array of elements/nodes
+        /// JArray of elements/nodes
         /// </summary>
         Array
     }
@@ -45,11 +45,11 @@ namespace JSONode.JSON
            switch(type.Name){
                case "String":
                    return AttrType.String;
-               case "Array":
+               case "JSONode.JSON.JArray":
                    return AttrType.Array;
                case "Boolean":
                    return AttrType.Boolean;
-               case "Element":
+               case "JSONode.JSON.Element":
                    return AttrType.Element;
                default:
                    return AttrType.Literal;
@@ -62,7 +62,7 @@ namespace JSONode.JSON
         /// <param name="srcObject">Extended object</param>
         /// <returns>AttrType for object</returns>
         public static AttrType ToAttrType(this Object srcObject){
-            return srcObject.ToAttrType();
+            return srcObject.GetType().ToAttrType();
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace JSONode.JSON
         /// </summary>
         /// <param name="srcObject">Source Object</param>
         /// <returns>Formatted String version of Object's value. If type
-        /// is determined to be Array, Element, or Unknown, null is returned.</returns>
+        /// is determined to be JArray, Element, or Unknown, null is returned.</returns>
         public static String FormatByAttrType(this Object srcObject){
             String formatted = "Error";
             switch(srcObject.ToAttrType()){
@@ -92,8 +92,9 @@ namespace JSONode.JSON
                 case AttrType.String:
                     formatted = String.Format("\"{0}\"", srcObject);
                     break;
-                case default:
-                    formatted = null;
+                //default:
+                //    formatted = null;
+                //    break;
             }
             return formatted;
         }

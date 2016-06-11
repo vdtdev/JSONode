@@ -1,20 +1,53 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSONode", "JSONode\JSONode.csproj", "{BF2D36E7-D8FB-4975-BE5B-31F3BEA82F3B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSONodeTests", "JSONodeTests\JSONodeTests.csproj", "{E8515E71-3268-4BEF-A4E9-F327868AAA0A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{313FF15B-9FE9-4B1F-911F-23F82460286A}"
+	ProjectSection(SolutionItems) = preProject
+		JSONode1.vsmdi = JSONode1.vsmdi
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
 		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BF2D36E7-D8FB-4975-BE5B-31F3BEA82F3B}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{BF2D36E7-D8FB-4975-BE5B-31F3BEA82F3B}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{BF2D36E7-D8FB-4975-BE5B-31F3BEA82F3B}.Debug|Mixed Platforms.Build.0 = Debug|x86
 		{BF2D36E7-D8FB-4975-BE5B-31F3BEA82F3B}.Debug|x86.ActiveCfg = Debug|x86
 		{BF2D36E7-D8FB-4975-BE5B-31F3BEA82F3B}.Debug|x86.Build.0 = Debug|x86
+		{BF2D36E7-D8FB-4975-BE5B-31F3BEA82F3B}.Release|Any CPU.ActiveCfg = Release|x86
+		{BF2D36E7-D8FB-4975-BE5B-31F3BEA82F3B}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{BF2D36E7-D8FB-4975-BE5B-31F3BEA82F3B}.Release|Mixed Platforms.Build.0 = Release|x86
 		{BF2D36E7-D8FB-4975-BE5B-31F3BEA82F3B}.Release|x86.ActiveCfg = Release|x86
 		{BF2D36E7-D8FB-4975-BE5B-31F3BEA82F3B}.Release|x86.Build.0 = Release|x86
+		{E8515E71-3268-4BEF-A4E9-F327868AAA0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8515E71-3268-4BEF-A4E9-F327868AAA0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8515E71-3268-4BEF-A4E9-F327868AAA0A}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E8515E71-3268-4BEF-A4E9-F327868AAA0A}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E8515E71-3268-4BEF-A4E9-F327868AAA0A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E8515E71-3268-4BEF-A4E9-F327868AAA0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8515E71-3268-4BEF-A4E9-F327868AAA0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8515E71-3268-4BEF-A4E9-F327868AAA0A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{E8515E71-3268-4BEF-A4E9-F327868AAA0A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{E8515E71-3268-4BEF-A4E9-F327868AAA0A}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = JSONode1.vsmdi
 	EndGlobalSection
 EndGlobal

@@ -3,7 +3,9 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using JSON = JSONode.JSON;
+using JSONode;
+using JSONode.JSON;
+using JAttribute = JSONode.JSON.Attribute;
 
 namespace JSONodeTests
 {
@@ -13,11 +15,11 @@ namespace JSONodeTests
     [TestClass]
     public class JSONUnitTest
     {
+
         public JSONUnitTest()
         {
-            //
-            // TODO: Add constructor logic here
-            //
+
+
         }
 
         private TestContext testContextInstance;
@@ -61,11 +63,45 @@ namespace JSONodeTests
         #endregion
 
         [TestMethod]
-        public void TestMethod1()
+        public void Create_Element()
         {
-            //
-            // TODO: Add test logic here
-            //
+            Element e = new Element("Root", true);
+            Assert.AreEqual(e.Name, "Root");
+            Assert.AreEqual(e.IsRoot, true);
+            JAttribute a = new JAttribute("test", 15);
+            Assert.AreEqual(a.Name, "test");
         }
+
+        [TestMethod]
+        public void Create_Array()
+        {
+            JArray array = new JArray();
+            Object[] items = { (Object)1, (Object)2, (Object)true, (Object)"Hello" };
+
+            int itemCount = 0;
+
+            for (int i = 0; i < items.Length;i++ )
+            {
+                array.Add(items[i]);
+                itemCount++;
+                Assert.AreEqual(array.Items.Length, itemCount, "Not enough items in Array.");
+            }
+
+            foreach (JArray.ArrayItem ai in array.Items)
+            {
+                Assert.AreEqual(ai.Type, ai.Value.ToAttrType(), "Attr Type Mismatch");
+            }
+
+
+            array.RemoveAt(0);
+            Assert.AreEqual(array.Items.Length, itemCount - 1, "Item count didn't decrease.");
+
+            bool remove = array.Remove((object)2);
+            Assert.IsTrue(remove);
+            Assert.AreEqual(array.Items.Length, itemCount - 2, "Item count didn't decrease;");
+            
+
+        }
+
     }
 }

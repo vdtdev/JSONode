@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using EArray = JSONode.JSON.Array;
+using EArray = JSONode.JSON.JArray;
 
 namespace JSONode.JSON
 {
@@ -58,7 +58,7 @@ namespace JSONode.JSON
             }
         }
         /// <summary>
-        /// Get Attribute value (as Array)
+        /// Get Attribute value (as JArray)
         /// </summary>
         /// <remarks>Will throw an AttributeException if value is not an 
         /// Element</remarks>
@@ -66,7 +66,7 @@ namespace JSONode.JSON
         {
             get
             {
-                EArray value = null;
+                JArray value = null;
                 if (value.ToAttrType() == AttrType.Array)
                 {
                     value = (EArray)this.value;

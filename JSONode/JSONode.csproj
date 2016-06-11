@@ -34,6 +34,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net40\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -52,10 +56,13 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="JSON\Array.cs" />
+    <Compile Include="JSON\JArray.cs" />
     <Compile Include="JSON\Attribute.cs" />
     <Compile Include="JSON\AttrType.cs" />
     <Compile Include="JSON\Element.cs" />
+    <Compile Include="JSON\Exceptions.cs" />
+    <Compile Include="Processing\JsonIO.cs" />
+    <Compile Include="Processing\JSONReader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\Node\Attribute.cs">
@@ -69,6 +76,12 @@
     </Compile>
     <Compile Include="UI\Node\Element.Designer.cs">
       <DependentUpon>Element.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Node\JArray.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Node\JArray.Designer.cs">
+      <DependentUpon>JArray.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
@@ -88,6 +101,11 @@
     <EmbeddedResource Include="UI\Node\Element.resx">
       <DependentUpon>Element.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\Node\JArray.resx">
+      <DependentUpon>JArray.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="JSON\ClassDiagram.cd" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -99,8 +117,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Parser\" />
     <Folder Include="UI\Helpers\" />
+    <Folder Include="UI\Visual\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

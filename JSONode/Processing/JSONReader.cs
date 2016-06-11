@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using JArray = JSONode.JSON.Array;
+using JArray = JSONode.JSON.JArray;
 using JAttribute = JSONode.JSON.Attribute;
 using System.IO;
 using JsoNet = Newtonsoft.Json;
@@ -11,9 +11,109 @@ using JsoNet = Newtonsoft.Json;
 
 namespace JSONode.Processing
 {
-    class JSONReader
+    public class JSONReader
     {
+
+
         #region [Parse Progress Struct]
+#if DEBUG
+        public struct ParseTracker
+#else
+        private struct ParseTracker
+#endif        
+        {
+            public enum Location { Element, Array, Attribute, None }
+            public int curAttr, curArray, curElem;
+            public Location curLoc;
+            public String nextName;
+            public Object nextValue;
+            public List<Element> listElem;
+            public List<JArray> listArray;
+            public List<JAttribute> listAttr;
+            public Stack<Location> histLoc;
+            public Stack<int> histIndex;
+
+            public ParseTracker(Element root)
+            {
+                this.nextName = null;
+                this.nextValue = null;
+
+                curAttr = curArray = curElem = -1;
+                curLoc = Location.Element;
+
+                listElem = new List<Element>();
+                listArray = new List<JSON.JArray>();
+                listAttr = new List<JSON.Attribute>();
+
+                histLoc = new Stack<Location>();
+                histIndex = new Stack<int>();
+
+                listElem.Add(root);
+                curElem = listElem.IndexOf(root);
+            }
+            public Element Element { get { return listElem[curElem]; } }
+            public JAttribute Attribute { get { return listAttr[curAttr]; } }
+            public JArray Array { get { return listArray[curArray]; } }
+            /// <summary>
+            /// Change current location and move previous location and index to history
+            /// </summary>
+            /// <param name="location">New location</param>
+            public void UpdateLocation(Location location)
+            {
+                if(curLoc != Location.None)
+                {
+                    switch (curLoc)
+                    {
+                        case Location.Attribute:
+                            histIndex.Push(curAttr);
+                            break;
+                        case Location.Array:
+                            histIndex.Push(curArray);
+                            break;
+                        case Location.Element:
+                            histIndex.Push(curElem);
+                            break;
+                    }
+                    histLoc.Push(curLoc);
+                }
+                curLoc = location;
+            }
+            /// <summary>
+            /// Return to previous location, restoring associated current index
+            /// </summary>
+            public void PreviousLocation()
+            {
+                // avoid problems if the history is empty
+                if (histLoc.Count == 0)
+                {
+                    return;
+                }
+                curLoc = histLoc.Pop();
+                switch (curLoc)
+                {
+                    case Location.Array:
+                        curArray = histIndex.Pop();
+                        break;
+                    case Location.Attribute:
+                        curAttr = histIndex.Pop();
+                        break;
+                    case Location.Element:
+                        curElem = histIndex.Pop();
+                        break;
+                }
+            }
+            public JAttribute StartAttr(String name)
+            {
+                JAttribute attr = new JAttribute(name, 0);
+                listAttr.Add(attr);
+                curAttr = listAttr.IndexOf(attr);
+                return attr;
+            }
+            public void FinishAttr()
+            {
+
+            }
+        }
         private struct ParseStep
         {
             public enum Location
@@ -30,6 +130,9 @@ namespace JSONode.Processing
             public Location previous;
             public String nextName;
             public Object nextValue;
+            public Element prevElem;
+            public JArray prevArray;
+            public JSON.Attribute prevAttr;
             public ParseStep(Element root)
             {
                 this.curAttr = null;
@@ -39,6 +142,9 @@ namespace JSONode.Processing
                 this.previous = Location.None;
                 this.nextName = null;
                 this.nextValue = null;
+                this.prevArray = null;
+                this.prevElem = null;
+                this.prevAttr = null;
             }
             /// <summary>
             /// Update tracking location
@@ -52,18 +158,39 @@ namespace JSONode.Processing
                 this.current = loc;
             }
         }
-        #endregion
+#endregion
 
-        #region [Private Fields/Objects]
+#region [Private Fields/Objects]
         private String fileName = "";
         private String source = "";
         private Element root = null;
-        #endregion
+        private ParseTracker track = new ParseTracker();
+#endregion
+
+#region [Public Properties]
+        /// <summary>
+        /// Root element of parsed JSON
+        /// </summary>
+        public Element Document
+        {
+            get
+            {
+                return root;
+            }
+        }
+#if DEBUG
+        public ParseTracker Track { get { return this.track; } }
+#endif
+#endregion
 
         public JSONReader(String fileName)
         {
             this.fileName = fileName;
             this.root = new Element("Root", true);
+            if (!this.ReadFile())
+            {
+                throw new Exception("File was not successfully loaded.");
+            }
         }
 
         public bool Parse()
@@ -82,41 +209,130 @@ namespace JSONode.Processing
             JsoNet.JsonTextReader reader = new JsoNet.JsonTextReader(new StringReader(this.source));
 
             ParseStep tracker = new ParseStep(root);
+            ParseTracker track = new ParseTracker(root);
+            
+            while(reader.Read() && reader.TokenType != JsoNet.JsonToken.StartObject)
+            {
+
+            }
 
             while (reader.Read())
             {
                 switch (reader.TokenType)
                 {
                     case JsoNet.JsonToken.PropertyName:
-                        tracker.UpdateLocation(ParseStep.Location.Attribute);
-                        tracker.nextName = (String)reader.Value;
-                        tracker.curAttr = new JAttribute(tracker.nextName, null);
+                        track.UpdateLocation(ParseTracker.Location.Attribute);
+                        //track.nextName = (String)reader.Value;
+                        track.StartAttr((String)reader.Value);
+                        //tracker.UpdateLocation(ParseStep.Location.Attribute);
+                        //tracker.nextName = (String)reader.Value;
+                        //tracker.curAttr = new JAttribute(tracker.nextName, 0);
                         break;
                     case JsoNet.JsonToken.Boolean:
-                        if (tracker.current == ParseStep.Location.Attribute)
+                    case JsoNet.JsonToken.String:
+                    case JsoNet.JsonToken.Float:
+                    case JsoNet.JsonToken.Integer:
+                        if(track.curLoc == ParseTracker.Location.Attribute)
                         {
-                            tracker.curAttr.Value = reader.Value;
+                            track.Attribute.Value = reader.Value;
+                            track.Element.Add(track.Attribute);
+                            track.PreviousLocation();
                         }
-                        if (tracker.current == ParseStep.Location.Array)
+                        else if(track.curLoc == ParseTracker.Location.Array)
                         {
-                            tracker.curArray.Add(reader.Value);
+                            track.Array.Add(reader.Value);
+                            //track.PreviousLocation();
+                        }
+
+                        //if (tracker.current == ParseStep.Location.Attribute)
+                        //{
+                        //    tracker.curAttr.Value = reader.Value;
+                        //}
+                        //if (tracker.current == ParseStep.Location.Array)
+                        //{
+                        //    tracker.curArray.Add(reader.Value);
+                        //}
+                        break;
+                    case JsoNet.JsonToken.EndObject:
+                        if (track.histLoc.Count != 0)
+                        {
+                            if (track.histLoc.Peek() == ParseTracker.Location.Attribute)
+                            {
+                                track.Attribute.Value = track.Element;
+                                track.PreviousLocation();
+                            }
+                            else if (track.histLoc.Peek() == ParseTracker.Location.Array)
+                            {
+                                track.listArray[track.histIndex.Peek()].Add(track.Element);
+                                track.PreviousLocation();
+                            }
+                            //tracker.current=tracker.previous;
+                            //if (tracker.previous == ParseStep.Location.Element)
+                            //{
+                            //    tracker.curElem = tracker.prevElem;
+                            //}
+                            //if (tracker.previous == ParseStep.Location.Array)
+                            //{
+                            //    tracker.curArray = tracker.prevArray;
+                            //}
                         }
                         break;
-
-
+                    case JsoNet.JsonToken.StartObject:
+                        track.UpdateLocation(ParseTracker.Location.Element);
+                        if(track.histLoc.Peek()== ParseTracker.Location.Attribute)
+                        {
+                            Element next1 = new Element("", false);
+                            track.listElem.Add(next1);
+                            track.curElem = track.listElem.IndexOf(next1);
+                        }
+                        else if (track.histLoc.Peek() == ParseTracker.Location.Array)
+                        {
+                            Element next2 = new Element((String)track.Attribute.Value, false);
+                            track.listElem.Add(next2);
+                            track.curElem = track.listElem.IndexOf(next2);
+                        }
+                        //tracker.previous = tracker.current;
+                        //tracker.current = ParseStep.Location.Element;
+                        //if(tracker.previous == ParseStep.Location.Attribute)
+                        //{
+                        //    tracker.prevAttr = tracker.curAttr;
+                        //}
+                        break;
+                    case JsoNet.JsonToken.StartArray:
+                        track.UpdateLocation(ParseTracker.Location.Array);
+                        JArray next = new JArray();
+                        track.listArray.Add(next);
+                        track.curArray = track.listArray.IndexOf(next);
+                        break;
+                    case JsoNet.JsonToken.EndArray:
+                        if(track.histLoc.Count>0 && track.histLoc.Peek()== ParseTracker.Location.Array)
+                        {
+                            JArray parray = track.listArray[track.histIndex.Peek()];
+                            parray.Add(track.Array);
+                            track.PreviousLocation();
+                        }
+                        else if(
+                            (track.histLoc.Count > 0 && track.histLoc.Peek()== ParseTracker.Location.Attribute)
+                            || track.Attribute != null)
+                        {
+                            track.Attribute.Value = track.Array;
+                            track.PreviousLocation(); // back to attribute
+                            track.PreviousLocation(); // back to attribute's parent
+                        }
+                        break;
                 }
             }
             return success;
 
         }
 
-        #region [Private Methods]
+#region [Private Methods]
         private bool ReadFile()
         {
-            if (this.root == null)
-            {
-                throw new Exception("File not specified.");
-            }
+            //if (this.root == null)
+            //{
+            //    throw new Exception("File not specified.");
+            //}
             bool success = true;
             try
             {
@@ -129,7 +345,7 @@ namespace JSONode.Processing
             }
             return success;
         }
-        #endregion
+#endregion
 
     }
 }
