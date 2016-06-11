@@ -1,24 +1,28 @@
-﻿using JSONode.JSON;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using EArray = JSONode.JSON.JArray;
+﻿using System;
 using System.IO;
 using JsoNet = Newtonsoft.Json;
 
 
 namespace JSONode.Processing
 {
-    class JsonIO
+    public class JsonIO
     {
 
-        public static Element LoadFile(String fileName)
+        public static JsoNet.Linq.JObject LoadFile(String fileName)
         {
-            
-            JsoNet.JsonTextReader reader = new JsoNet.JsonTextReader(new StreamReader(fileName));
-            return null;
-            
+
+            StreamReader stream = new StreamReader(fileName);
+            JsoNet.Linq.JObject o = JsoNet.Linq.JObject.Parse(stream.ReadToEnd());
+            //return o;
+
+            JSON.Element e = new JSON.Element("Root", true);
+
+            foreach(var x in o.Children())
+            {
+                
+            }
+
+
         }
 
     }

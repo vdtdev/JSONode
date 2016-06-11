@@ -77,6 +77,12 @@
     <Compile Include="UI\Node\Element.Designer.cs">
       <DependentUpon>Element.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\Node\JArray.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Node\JArray.Designer.cs">
+      <DependentUpon>JArray.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -95,6 +101,9 @@
     <EmbeddedResource Include="UI\Node\Element.resx">
       <DependentUpon>Element.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\Node\JArray.resx">
+      <DependentUpon>JArray.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="JSON\ClassDiagram.cd" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -109,6 +118,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="UI\Helpers\" />
+    <Folder Include="UI\Visual\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
